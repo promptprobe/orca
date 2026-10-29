@@ -242,13 +242,9 @@ function targetUrlForRequest(target: URL, request: IncomingMessage): URL {
 }
 
 function requestHeadersForTarget(request: IncomingMessage, target: URL): http.OutgoingHttpHeaders {
-  const originalHost = request.headers.host
   const headers: http.OutgoingHttpHeaders = { ...request.headers }
+  // Dev servers check Host; origin checks like Next.js Server Actions read the forwarded host.
+  headers['x-forwarded-host'] = request.headers.host
   headers.host = target.host
-  if (originalHost) {
-    headers['x-forwarded-host'] = originalHost
-  } else {
-    delete headers['x-forwarded-host']
-  }
   return headers
 }
